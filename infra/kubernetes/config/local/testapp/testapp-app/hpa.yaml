@@ -1,0 +1,11 @@
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: testapp-app
+  namespace: testapp
+  labels:
+    app: testapp-app
+spec:
+  minReplicas: 1
+  maxReplicas: 1

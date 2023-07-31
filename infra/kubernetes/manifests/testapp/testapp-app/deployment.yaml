@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testapp-app
+  namespace: testapp
+  labels:
+    app: testapp-app
+spec:
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: testapp-app
+  template:
+    metadata:
+      labels:
+        app: testapp-app
+    spec:
+      volumes:
+        - name: testapp-app
+          configMap:
+            name: testapp-app
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
+      containers:
+        - name: testapp-app
+          image: my.docker.repository.com/testapp/testapp-app:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            -
+              secretRef:
+                name: testapp-app
+            -
+              configMapRef:
+                name: testapp-app
+          ports:
+            - name: dotnet
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: 1
+              memory: 512M
+            requests:
+              cpu: 1
+              memory: 512M

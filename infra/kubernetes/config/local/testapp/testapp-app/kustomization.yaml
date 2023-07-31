@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: testapp
+
+commonLabels:
+  namespace: testapp
+  env: local
+
+resources:
+- ../../../../manifests/testapp/testapp-app
+
+patchesStrategicMerge:
+- hpa.yaml
+
+configMapGenerator:
+- name: testapp-app
+  namespace: testapp
+  envs:
+  - config.env
+
+secretGenerator:
+- name: testapp-app
+  namespace: testapp
+  envs:
+  - secrets.env
+  type: Opaque
+
+images:
+-
+  name: my.docker.repository.com/testapp/testapp-app
+  newTag: "latest"
