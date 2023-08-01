@@ -57,3 +57,6 @@ kubectl/port-forward/testapp/%: kubectl/configure
 kubectl/exec/testapp/%: kubectl/configure
 	$(KUBECTL_BIN) -n $(KUBECTL_NAMESPACE) exec -it service/testapp-$(notdir $@) $(KUBECTL_ARGS)  -it ash
 
+kubectl/port-forward/kafdrop: kubectl/configure
+	$(KUBECTL_BIN) -n kafka port-forward service/kafdrop $(KUBECTL_ARGS) 9000
+

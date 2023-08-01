@@ -1,0 +1,11 @@
+﻿apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  namespace: kafka
+
+namespace: kafka
+
+resources:
+  - deployment.yaml
+  - service.yaml

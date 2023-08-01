@@ -1,0 +1,15 @@
+﻿---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafdrop
+  namespace: kafka
+  labels:
+    app: kafdrop
+spec:
+  selector:
+    app: kafdrop
+  ports:
+    - name: kafdrop
+      targetPort: 9000
+      port: 9000

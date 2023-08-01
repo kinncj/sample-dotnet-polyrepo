@@ -1,0 +1,32 @@
+﻿---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cp-zookeeper-headless
+  labels:
+    app: cp-zookeeper
+spec:
+  ports:
+    - port: 2888
+      name: server
+    - port: 3888
+      name: leader-election
+  clusterIP: None
+  selector:
+    app: cp-zookeeper
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cp-kafka-broker-headless
+  namespace: data-pipeline
+  labels:
+    app: cp-kafka-broker
+spec:
+  ports:
+    - port: 9092
+      name: broker
+  clusterIP: None
+  selector:
+    app: cp-kafka-broker

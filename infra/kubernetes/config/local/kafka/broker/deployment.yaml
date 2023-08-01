@@ -1,0 +1,153 @@
+﻿---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cp-zookeeper
+  namespace: kafka
+  labels:
+    app: cp-zookeeper
+spec:
+  selector:
+    matchLabels:
+      app: cp-zookeeper
+  serviceName: cp-zookeeper-headless
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates: []
+  template:
+    metadata:
+      labels:
+        app: cp-zookeeper
+    spec:
+      containers:
+        - name: cp-zookeeper-server
+          image: "confluentinc/cp-zookeeper:5.4.1"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: server
+            - containerPort: 3888
+              name: leader-election
+          env:
+            - name : KAFKA_HEAP_OPTS
+              value: "-Xms512M -Xmx512M"
+            - name : ZOOKEEPER_TICK_TIME
+              value: "2000"
+            - name : ZOOKEEPER_SYNC_LIMIT
+              value: "5"
+            - name : ZOOKEEPER_INIT_LIMIT
+              value: "10"
+            - name : ZOOKEEPER_MAX_CLIENT_CNXNS
+              value: "60"
+            - name : ZOOKEEPER_AUTOPURGE_SNAP_RETAIN_COUNT
+              value: "3"
+            - name : ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL
+              value: "24"
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+            - name : ZOOKEEPER_SERVERS
+              value: "cp-zookeeper-0.cp-zookeeper-headless.default:2888:3888"
+            # ZOOKEEPER_SERVER_ID is required just to pass cp-zookeeper ensure script for env check,
+            # the value(metadata.mame) is not used and will be overwritten in command part
+            - name: ZOOKEEPER_SERVER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command:
+            - "bash"
+            - "-c"
+            - |
+              ZK_FIX_HOST_REGEX="s/${HOSTNAME}\.[^:]*:/0.0.0.0:/g"
+              ZOOKEEPER_SERVER_ID=$((${HOSTNAME##*-}+1)) \
+              ZOOKEEPER_SERVERS=`echo $ZOOKEEPER_SERVERS | sed -e "$ZK_FIX_HOST_REGEX"` \
+              /etc/confluent/docker/run
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cp-kafka-broker
+  namespace: kafka
+  labels:
+    app: cp-kafka-broker
+spec:
+  selector:
+    matchLabels:
+      app: cp-kafka-broker
+  serviceName: cp-kafka-broker-headless
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  volumeClaimTemplates: []
+  template:
+    metadata:
+      labels:
+        app: cp-kafka-broker
+    spec:
+      containers:
+        - name: cp-kafka-broker
+          image: "confluentinc/cp-enterprise-kafka:5.4.1"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 9092
+              name: kafka
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KAFKA_HEAP_OPTS
+              value: -Xms512M -Xmx512M
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "cp-zookeeper-headless:2181"
+            - name: CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS
+              value: "PLAINTEXT://cp-kafka-broker-headless:9092"
+            - name: "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP"
+              value: "PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAIN:PLAINTEXT"
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: "1"
+            - name: CONFLUENT_SUPPORT_METRICS_ENABLE
+              value: "false"
+            - name: KAFKA_DELETE_TOPIC_ENABLE
+              value: "true"
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
+          command:
+            - sh
+            - -exc
+            - |
+              export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
+              export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.cp-kafka-broker-headless.${POD_NAMESPACE}:9092,EXTERNAL://localhost:$((31090 + ${KAFKA_BROKER_ID})) && \
+              exec /etc/confluent/docker/run
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cp-kafka-client
+  namespace: kafka
+  labels:
+    app: cp-kafka-client
+spec:
+  containers:
+    - name: kafka-client
+      image: confluentinc/cp-kafka:5.4.1
+      command:
+        - sh
+        - -c
+        - "exec tail -f /dev/null"
