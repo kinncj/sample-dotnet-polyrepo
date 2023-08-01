@@ -8,12 +8,12 @@ namespace App.Services;
 public class ForecastService : IForecastService
 {
     private readonly HttpClient _httpClient;
-    private readonly ForecastConfiguration _forecastConfiguration;
+    private readonly Configuration.Configuration _configuration;
 
 
-    public ForecastService(HttpClient httpClient, IOptions<ForecastConfiguration> forecastConfiguration)
+    public ForecastService(HttpClient httpClient, IOptions<Configuration.Configuration> configuration)
     { 
-        httpClient.BaseAddress = forecastConfiguration.Value.BaseUri;
+        httpClient.BaseAddress = configuration.Value.ForecastUri;
         _httpClient = httpClient;
     }
 

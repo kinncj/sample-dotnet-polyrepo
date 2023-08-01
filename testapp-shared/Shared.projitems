@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DTOs\WeatherForecast.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DTOs\GetWeatherForecast.cs" />
   </ItemGroup>
 </Project>

@@ -8,4 +8,7 @@
     <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props" />
     <Import Project="Shared.projitems" Label="Shared" />
     <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets" />
+    <ItemGroup>
+        <PackageReference Include="Confluent.Kafka" Version="1.9.3" />
+    </ItemGroup>
 </Project>
