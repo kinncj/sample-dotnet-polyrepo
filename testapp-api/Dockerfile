@@ -6,7 +6,7 @@ EXPOSE 8080
 # Build image which builds the project and prepares the assets for publishing
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ./testapp-app .
+COPY ./testapp-api .
 COPY ./testapp-shared ../testapp-shared
 RUN dotnet restore "./Api.csproj"
 WORKDIR "/src/."

@@ -21,10 +21,6 @@ spec:
         - name: testapp-app
           configMap:
             name: testapp-app
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "2"
       containers:
         - name: testapp-app
           image: my.docker.repository.com/testapp/testapp-app:latest
