@@ -9,7 +9,7 @@ builder.Configuration
     .Build();
 
 // Add services to the container.
-builder.Services.Configure<Configuration>(builder.Configuration.GetSection("APP"));
+builder.Services.Configure<Configuration>(builder.Configuration.GetSection("API"));
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IWeatherForecastService<WeatherForecast>, WeatherForecastService>();
 builder.Services.AddHostedService<SampleConsumer>();

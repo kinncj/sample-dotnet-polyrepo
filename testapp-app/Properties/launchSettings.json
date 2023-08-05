@@ -14,20 +14,26 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:80,http://localhost:8080",
+      "applicationUrl": "http://localhost:8080,http://localhost:8443",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MY_ORG__APP__KAFKA_BOOTSTRAP_SERVERS": "cp-kafka-broker-headless.kafka:9092",
+        "MY_ORG__APP__SEND_TOPIC": "testapp.weatherforecast.send",
+        "MY_ORG__APP__REPLY_TOPIC": "testapp.weatherforecast.reply",
+        "ASPNETCORE_URLS": "http://+:8080"      }
     },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:443;http://localhost:8443",
+      "applicationUrl": "https://localhost:8080;http://localhost:8443",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MY_ORG__APP__KAFKA_BOOTSTRAP_SERVERS": "cp-kafka-broker-headless.kafka:9092",
+        "MY_ORG__APP__SEND_TOPIC": "testapp.weatherforecast.send",
+        "MY_ORG__APP__REPLY_TOPIC": "testapp.weatherforecast.reply",
+        "ASPNETCORE_URLS": "http://+:8080"      }
     },
     "IIS Express": {
       "commandName": "IISExpress",
