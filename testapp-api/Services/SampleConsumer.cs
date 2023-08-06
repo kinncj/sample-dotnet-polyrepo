@@ -38,8 +38,9 @@ public class SampleConsumer: IHostedService
         _weatherForecastService = weatherForecastService;
     }
 
-    public void execute()
+    protected async void execute()
     {
+        await Task.Yield();
         _consumer.Subscribe(_configuration.consumeTopic);
         while (true)
         {
